@@ -18,16 +18,16 @@ margin:0;
 
 header{
 background:#111827;
-padding:20px;
-font-size:26px;
+padding:18px;
+font-size:24px;
 color:#f97316;
 font-weight:bold;
 }
 
 .tabs{
 display:flex;
-background:#1e293b;
 overflow:auto;
+background:#1e293b;
 }
 
 .tab{
@@ -47,10 +47,22 @@ padding:20px;
 .match{
 display:flex;
 justify-content:space-between;
+align-items:center;
 background:#1e293b;
 padding:12px;
-margin-bottom:8px;
+margin-bottom:10px;
 border-radius:8px;
+}
+
+.teams{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo{
+width:26px;
+height:26px;
 }
 
 .tip{
@@ -72,14 +84,13 @@ display:none;
 
 function showLeague(name){
 
-    let leagues=document.querySelectorAll(".league");
+    let leagues=document.querySelectorAll(".league")
 
     leagues.forEach(l=>{
         l.style.display="none"
     })
 
     document.getElementById(name).style.display="block"
-
 }
 
 </script>
@@ -114,9 +125,18 @@ function showLeague(name){
 
 <div class="match">
 
-<div>
-{{m.home}} vs {{m.away}} <br>
-AI {{m.prob}}%
+<div class="teams">
+
+<img src="{{m.home_logo}}" class="logo">
+
+{{m.home}}
+
+vs
+
+<img src="{{m.away_logo}}" class="logo">
+
+{{m.away}}
+
 </div>
 
 <div class="tip
@@ -125,7 +145,7 @@ AI {{m.prob}}%
 {% if m.tip == '2' %}tip2{% endif %}
 ">
 
-{{m.tip}}
+{{m.tip}} ({{m.prob}}%)
 
 </div>
 
