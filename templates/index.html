@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DjepetoTip</title>
+</head>
+<body style="background:black;color:white;font-family:sans-serif">
+
+<h1>DjepetoTip</h1>
+
+<form method="POST" action="/search">
+<input name="team" placeholder="Upiši tim (npr Chelsea)">
+<button type="submit">Pretraži</button>
+</form>
+
+<br>
+
+<form method="POST" action="/generate">
+<button>🎲 Generiši novi tiket</button>
+</form>
+
+<h2>🔥 Tip dana</h2>
+<p>{{ tip }}</p>
+
+<h2>💰 AI tiket</h2>
+<p>{{ tiket }}</p>
+
+<h2>📅 Današnje utakmice</h2>
+<ul>
+{% for m in matches %}
+<li>{{m}}</li>
+{% endfor %}
+</ul>
+
+</body>
+</html>
