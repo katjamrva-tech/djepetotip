@@ -2,6 +2,7 @@ from flask import Flask, render_template
 import requests
 import os
 from datetime import datetime, timedelta
+import hashlib
 
 app = Flask(__name__)
 
@@ -18,7 +19,8 @@ LEAGUES = {
 
 def ai_tip(home, away):
 
-    seed = abs(hash(home + away)) % 100
+    key = home + away
+    seed = int(hashlib.md5(key.encode()).hexdigest(),16) % 100
 
     home_prob = 40 + (seed % 30)
     draw_prob = 20 + (seed % 20)
@@ -30,6 +32,20 @@ def ai_tip(home, away):
         return "X", draw_prob
     else:
         return "2", away_prob
+
+
+def get_logo(team):
+
+    try:
+        if "logo" in team:
+            return team["logo"]
+
+        if "logos" in team:
+            return team["logos"][0]["href"]
+    except:
+        pass
+
+    return "https://a.espncdn.com/i/teamlogos/soccer/500/default-team-logo.png"
 
 
 def get_matches(code):
@@ -48,11 +64,14 @@ def get_matches(code):
             comp = event["competitions"][0]
             teams = comp["competitors"]
 
-            home = teams[0]["team"]["displayName"]
-            away = teams[1]["team"]["displayName"]
+            home_team = teams[0]["team"]
+            away_team = teams[1]["team"]
 
-            home_logo = teams[0]["team"]["logo"]
-            away_logo = teams[1]["team"]["logo"]
+            home = home_team["displayName"]
+            away = away_team["displayName"]
+
+            home_logo = get_logo(home_team)
+            away_logo = get_logo(away_team)
 
             date = event["date"][:10]
 
