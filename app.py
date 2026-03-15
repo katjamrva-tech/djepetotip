@@ -4,55 +4,90 @@ import random
 
 app = Flask(__name__)
 
-def get_matches():
-    url = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard"
-    r = requests.get(url)
-    data = r.json()
+
+def get_today_matches():
+
+    url = "https://api.sofascore.com/api/v1/sport/football/events/live"
+
+    try:
+        r = requests.get(url)
+        data = r.json()
+    except:
+        return []
 
     matches = []
 
-    if "events" in data:
-        for event in data["events"]:
-            home = event["competitions"][0]["competitors"][0]["team"]["name"]
-            away = event["competitions"][0]["competitors"][1]["team"]["name"]
+    for event in data.get("events", []):
 
-            prob = random.randint(55, 75)
+        home = event["homeTeam"]["name"]
+        away = event["awayTeam"]["name"]
 
-            matches.append({
-                "home": home,
-                "away": away,
-                "prob": prob
-            })
+        prob = random.randint(55,75)
+
+        if prob >= 65:
+            tip = "1"
+        elif prob >= 60:
+            tip = "X"
+        else:
+            tip = "2"
+
+        matches.append({
+            "home": home,
+            "away": away,
+            "tip": tip,
+            "prob": prob
+        })
 
     return matches
 
 
+def best_matches():
+
+    matches = get_today_matches()
+
+    matches = sorted(matches, key=lambda x: x["prob"], reverse=True)
+
+    return matches[:20]
+
+
+def generate_ticket(matches):
+
+    if len(matches) < 3:
+        return None, None
+
+    ticket = random.sample(matches, 3)
+
+    total_prob = 1
+
+    for m in ticket:
+        total_prob *= m["prob"] / 100
+
+    total_prob = round(total_prob * 100, 2)
+
+    return ticket, total_prob
+
+
 @app.route("/", methods=["GET","POST"])
 def home():
-    matches = get_matches()
 
-    search_result = None
+    matches = best_matches()
+
+    tip = matches[0] if matches else None
+
+    ticket = None
+    total_prob = None
 
     if request.method == "POST":
-        team = request.form.get("team")
-
-        for m in matches:
-            if team.lower() in m["home"].lower() or team.lower() in m["away"].lower():
-                search_result = m
-
-    tip = random.choice(matches) if matches else None
+        ticket, total_prob = generate_ticket(matches)
 
     return render_template(
         "index.html",
         matches=matches,
         tip=tip,
-        search_result=search_result
+        ticket=ticket,
+        total_prob=total_prob
     )
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
-
-
-
-
+    app.run(debug=True)
