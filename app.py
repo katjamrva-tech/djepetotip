@@ -16,7 +16,8 @@ LEAGUES = [
 "UEFA Champions League"
 ]
 
-def ai_prediction():
+
+def ai_tip():
 
     home = random.randint(40,75)
     draw = random.randint(20,40)
@@ -32,32 +33,26 @@ def ai_prediction():
 
 def get_matches():
 
-    url = "https://api.sofascore.com/api/v1/sport/football/scheduled-events"
-
     matches = []
 
     try:
+
+        url = "https://api.sofascore.com/api/v1/sport/football/events/live"
+
         r = requests.get(url)
+
         data = r.json()
-    except:
-        return matches
 
-    today = datetime.now().date()
-    tomorrow = today + timedelta(days=1)
-
-    for event in data.get("events", []):
-
-        try:
+        for event in data.get("events", []):
 
             home = event["homeTeam"]["name"]
             away = event["awayTeam"]["name"]
-
             league = event["tournament"]["name"]
 
             if not any(l in league for l in LEAGUES):
                 continue
 
-            tip, prob = ai_prediction()
+            tip, prob = ai_tip()
 
             matches.append({
                 "home": home,
@@ -67,8 +62,8 @@ def get_matches():
                 "prob": prob
             })
 
-        except:
-            pass
+    except:
+        pass
 
     return matches
 
@@ -83,10 +78,7 @@ def home():
     for league in LEAGUES:
         leagues[league] = [m for m in matches if league in m["league"]]
 
-    return render_template(
-        "index.html",
-        leagues=leagues
-    )
+    return render_template("index.html", leagues=leagues)
 
 
 if __name__ == "__main__":
