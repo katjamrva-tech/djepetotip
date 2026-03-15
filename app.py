@@ -9,27 +9,32 @@ def get_today_matches():
 
     url = "https://api.sofascore.com/api/v1/sport/football/events/live"
 
+    matches = []
+
     try:
         r = requests.get(url)
         data = r.json()
     except:
-        return []
-
-    matches = []
+        return matches
 
     for event in data.get("events", []):
 
         home = event["homeTeam"]["name"]
         away = event["awayTeam"]["name"]
 
-        prob = random.randint(55,75)
+        home_prob = random.randint(40, 75)
+        draw_prob = random.randint(20, 40)
+        away_prob = random.randint(40, 75)
 
-        if prob >= 65:
+        if home_prob > draw_prob and home_prob > away_prob:
             tip = "1"
-        elif prob >= 60:
+            prob = home_prob
+        elif draw_prob > home_prob and draw_prob > away_prob:
             tip = "X"
+            prob = draw_prob
         else:
             tip = "2"
+            prob = away_prob
 
         matches.append({
             "home": home,
@@ -37,13 +42,6 @@ def get_today_matches():
             "tip": tip,
             "prob": prob
         })
-
-    return matches
-
-
-def best_matches():
-
-    matches = get_today_matches()
 
     matches = sorted(matches, key=lambda x: x["prob"], reverse=True)
 
@@ -53,39 +51,28 @@ def best_matches():
 def generate_ticket(matches):
 
     if len(matches) < 3:
-        return None, None
+        return None
 
-    ticket = random.sample(matches, 3)
-
-    total_prob = 1
-
-    for m in ticket:
-        total_prob *= m["prob"] / 100
-
-    total_prob = round(total_prob * 100, 2)
-
-    return ticket, total_prob
+    return random.sample(matches, 3)
 
 
-@app.route("/", methods=["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def home():
 
-    matches = best_matches()
+    matches = get_today_matches()
 
     tip = matches[0] if matches else None
 
     ticket = None
-    total_prob = None
 
     if request.method == "POST":
-        ticket, total_prob = generate_ticket(matches)
+        ticket = generate_ticket(matches)
 
     return render_template(
         "index.html",
         matches=matches,
         tip=tip,
-        ticket=ticket,
-        total_prob=total_prob
+        ticket=ticket
     )
 
 
