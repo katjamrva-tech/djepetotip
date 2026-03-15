@@ -5,6 +5,7 @@ import random
 app = Flask(__name__)
 
 
+# uzmi utakmice
 def get_today_matches():
 
     url = "https://api.sofascore.com/api/v1/sport/football/events/live"
@@ -48,12 +49,15 @@ def get_today_matches():
     return matches[:20]
 
 
+# generisi tiket
 def generate_ticket(matches):
 
     if len(matches) < 3:
-        return None
+        return []
 
-    return random.sample(matches, 3)
+    ticket = random.sample(matches, 3)
+
+    return ticket
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -61,9 +65,11 @@ def home():
 
     matches = get_today_matches()
 
-    tip = matches[0] if matches else None
-
+    tip = None
     ticket = None
+
+    if matches:
+        tip = matches[0]
 
     if request.method == "POST":
         ticket = generate_ticket(matches)
