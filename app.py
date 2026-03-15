@@ -1,24 +1,54 @@
 from flask import Flask, render_template
-import requests
-import random
 import os
+import random
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
+# Lige koje nas zanimaju
 LEAGUES = [
-"Premier League",
-"La Liga",
-"Serie A",
-"Bundesliga",
-"Ligue 1",
-"Super Lig",
-"UEFA Champions League"
+    "Premier League",
+    "La Liga",
+    "Serie A",
+    "Bundesliga",
+    "Ligue 1",
+    "Super Lig",
+    "Champions League"
 ]
 
+# Primer utakmica za danas i sutra
+MATCHES = {
+    "Premier League": [
+        ("Manchester City","Arsenal"),
+        ("Liverpool","Chelsea")
+    ],
+    "La Liga": [
+        ("Real Madrid","Sevilla"),
+        ("Barcelona","Valencia")
+    ],
+    "Serie A": [
+        ("Inter","Roma"),
+        ("Juventus","Napoli")
+    ],
+    "Bundesliga": [
+        ("Bayern","Dortmund"),
+        ("Leipzig","Leverkusen")
+    ],
+    "Ligue 1": [
+        ("PSG","Monaco"),
+        ("Lyon","Marseille")
+    ],
+    "Super Lig": [
+        ("Galatasaray","Besiktas"),
+        ("Fenerbahce","Trabzonspor")
+    ],
+    "Champions League": [
+        ("Real Madrid","Bayern"),
+        ("Manchester City","Inter")
+    ]
+}
 
 def ai_tip():
-
     home = random.randint(40,75)
     draw = random.randint(20,40)
     away = random.randint(40,75)
@@ -31,54 +61,37 @@ def ai_tip():
         return "2", away
 
 
-def get_matches():
+@app.route("/")
+def home():
 
-    matches = []
+    leagues = {}
 
-    try:
+    for league, games in MATCHES.items():
 
-        url = "https://api.sofascore.com/api/v1/sport/football/events/live"
+        matches = []
 
-        r = requests.get(url)
-
-        data = r.json()
-
-        for event in data.get("events", []):
-
-            home = event["homeTeam"]["name"]
-            away = event["awayTeam"]["name"]
-            league = event["tournament"]["name"]
-
-            if not any(l in league for l in LEAGUES):
-                continue
+        for m in games:
 
             tip, prob = ai_tip()
 
             matches.append({
-                "home": home,
-                "away": away,
-                "league": league,
+                "home": m[0],
+                "away": m[1],
                 "tip": tip,
                 "prob": prob
             })
 
-    except:
-        pass
+        leagues[league] = matches
 
-    return matches
+    today = datetime.now().strftime("%d.%m.%Y")
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y")
 
-
-@app.route("/")
-def home():
-
-    matches = get_matches()
-
-    leagues = {}
-
-    for league in LEAGUES:
-        leagues[league] = [m for m in matches if league in m["league"]]
-
-    return render_template("index.html", leagues=leagues)
+    return render_template(
+        "index.html",
+        leagues=leagues,
+        today=today,
+        tomorrow=tomorrow
+    )
 
 
 if __name__ == "__main__":
