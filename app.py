@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import random
+import os
 
 app = Flask(__name__)
 
@@ -49,9 +50,11 @@ def generate_matches():
 
     return matches
 
+
 def generate_ticket(matches):
 
     return random.sample(matches,3)
+
 
 @app.route("/", methods=["GET","POST"])
 def home():
@@ -72,7 +75,6 @@ def home():
         ticket=ticket
     )
 
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
