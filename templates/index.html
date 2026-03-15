@@ -7,8 +7,6 @@
 
 <title>DjepetoTip</title>
 
-<link rel="manifest" href="/static/manifest.json">
-
 <style>
 
 body{
@@ -20,25 +18,30 @@ margin:0;
 
 header{
 background:#111827;
-padding:18px;
-font-size:24px;
+padding:20px;
+font-size:26px;
 color:#f97316;
 font-weight:bold;
 }
 
 .tabs{
 display:flex;
-overflow:auto;
 background:#1e293b;
+overflow:auto;
 }
 
 .tab{
-padding:12px;
+padding:14px 18px;
+cursor:pointer;
 white-space:nowrap;
 }
 
+.tab:hover{
+background:#334155;
+}
+
 .container{
-padding:15px;
+padding:20px;
 }
 
 .match{
@@ -59,7 +62,27 @@ font-size:18px;
 .tipx{color:#facc15;}
 .tip2{color:#ef4444;}
 
+.league{
+display:none;
+}
+
 </style>
+
+<script>
+
+function showLeague(name){
+
+    let leagues=document.querySelectorAll(".league");
+
+    leagues.forEach(l=>{
+        l.style.display="none"
+    })
+
+    document.getElementById(name).style.display="block"
+
+}
+
+</script>
 
 </head>
 
@@ -70,7 +93,11 @@ font-size:18px;
 <div class="tabs">
 
 {% for league in leagues.keys() %}
-<div class="tab">{{league}}</div>
+
+<div class="tab" onclick="showLeague('{{league}}')">
+{{league}}
+</div>
+
 {% endfor %}
 
 </div>
@@ -79,7 +106,9 @@ font-size:18px;
 
 {% for league, matches in leagues.items() %}
 
-<h3>{{league}}</h3>
+<div class="league" id="{{league}}">
+
+<h2>{{league}}</h2>
 
 {% for m in matches %}
 
@@ -104,9 +133,22 @@ AI {{m.prob}}%
 
 {% endfor %}
 
+</div>
+
 {% endfor %}
 
 </div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+    let first=document.querySelector(".league")
+    if(first){
+        first.style.display="block"
+    }
+})
+
+</script>
 
 </body>
 </html>
