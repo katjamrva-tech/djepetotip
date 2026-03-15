@@ -1,81 +1,154 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>DjepetoTip</title>
+
 <style>
+
 body{
-background:#111827;
+background:#0f172a;
 color:white;
 font-family:Arial;
-padding:40px;
+margin:0;
 }
 
-h1{color:#f97316}
-
-.box{
-background:#1f2937;
+header{
+background:#111827;
 padding:15px;
-margin-top:15px;
-border-radius:8px;
+font-size:24px;
+color:#f97316;
+font-weight:bold;
+}
+
+.container{
+padding:15px;
+}
+
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
 }
 
 .match{
-margin-bottom:10px;
+padding:10px 0;
+border-bottom:1px solid #374151;
 }
+
+.tip1{color:#22c55e;font-weight:bold;}
+.tipx{color:#facc15;font-weight:bold;}
+.tip2{color:#ef4444;font-weight:bold;}
 
 button{
 background:#f97316;
 border:none;
-padding:10px 15px;
-border-radius:6px;
+padding:12px;
+border-radius:8px;
 color:white;
-cursor:pointer;
+font-size:16px;
+width:100%;
+margin-bottom:15px;
 }
 
-input{
-padding:10px;
-border-radius:6px;
-border:none;
-}
 </style>
+
 </head>
 
 <body>
 
-<h1>⚽ DjepetoTip</h1>
+<header>⚽ DjepetoTip</header>
 
-<form method="GET">
-<input name="team" placeholder="Upiši tim (npr Chelsea)">
-<button>Pretraži</button>
-</form>
+<div class="container">
 
-<br>
+<div class="card">
+
+<h3>🔥 Tip dana</h3>
+
+<div class="match">
+
+{{tip.home}} vs {{tip.away}}
+
+<div class="
+{% if tip.tip == '1' %}tip1{% endif %}
+{% if tip.tip == 'X' %}tipx{% endif %}
+{% if tip.tip == '2' %}tip2{% endif %}
+">
+
+TIP {{tip.tip}} ({{tip.prob}}%)
+
+</div>
+
+</div>
+
+</div>
+
 
 <form method="POST">
-<button>🎲 Generiši novi tiket</button>
+<button>🎲 Generiši AI tiket</button>
 </form>
 
-<div class="box">
-<h2>🔥 Tip dana</h2>
 
-{% if tip %}
+{% if ticket %}
+
+<div class="card">
+
+<h3>🎟 AI tiket</h3>
+
+{% for m in ticket %}
+
 <div class="match">
-<b>{{tip.home}}</b> vs <b>{{tip.away}}</b><br>
-AI šansa: {{tip.prob}} %
+
+{{m.home}} vs {{m.away}}
+
+<div class="
+{% if m.tip == '1' %}tip1{% endif %}
+{% if m.tip == 'X' %}tipx{% endif %}
+{% if m.tip == '2' %}tip2{% endif %}
+">
+
+TIP {{m.tip}} ({{m.prob}}%)
+
 </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
 {% endif %}
 
-</div>
 
-<div class="box">
-<h2>📅 Današnje utakmice</h2>
+<div class="card">
+
+<h3>📅 Današnje utakmice</h3>
 
 {% for m in matches %}
+
 <div class="match">
-⚽ {{m.home}} vs {{m.away}} — {{m.prob}} %
+
+{{m.home}} vs {{m.away}}
+
+<div class="
+{% if m.tip == '1' %}tip1{% endif %}
+{% if m.tip == 'X' %}tipx{% endif %}
+{% if m.tip == '2' %}tip2{% endif %}
+">
+
+TIP {{m.tip}} ({{m.prob}}%)
+
 </div>
+
+</div>
+
 {% endfor %}
+
+</div>
 
 </div>
 
