@@ -18,7 +18,7 @@ margin:0;
 
 header{
 background:#111827;
-padding:15px;
+padding:18px;
 font-size:24px;
 color:#f97316;
 font-weight:bold;
@@ -30,29 +30,41 @@ padding:15px;
 
 .card{
 background:#1e293b;
+border-radius:12px;
 padding:15px;
-border-radius:10px;
 margin-bottom:15px;
 }
 
 .match{
-padding:10px 0;
+display:flex;
+justify-content:space-between;
+padding:12px;
 border-bottom:1px solid #374151;
 }
 
-.tip1{color:#22c55e;font-weight:bold;}
-.tipx{color:#facc15;font-weight:bold;}
-.tip2{color:#ef4444;font-weight:bold;}
+.match:last-child{
+border-bottom:none;
+}
+
+.tip{
+font-weight:bold;
+font-size:18px;
+}
+
+.tip1{color:#22c55e;}
+.tipx{color:#facc15;}
+.tip2{color:#ef4444;}
 
 button{
 background:#f97316;
 border:none;
-padding:12px;
-border-radius:8px;
+padding:14px;
+border-radius:10px;
 color:white;
 font-size:16px;
 width:100%;
 margin-bottom:15px;
+cursor:pointer;
 }
 
 </style>
@@ -71,15 +83,18 @@ margin-bottom:15px;
 
 <div class="match">
 
-{{tip.home}} vs {{tip.away}}
+<div>
+{{tip.home}} vs {{tip.away}} <br>
+AI {{tip.prob}}%
+</div>
 
-<div class="
+<div class="tip
 {% if tip.tip == '1' %}tip1{% endif %}
 {% if tip.tip == 'X' %}tipx{% endif %}
 {% if tip.tip == '2' %}tip2{% endif %}
 ">
 
-TIP {{tip.tip}} ({{tip.prob}}%)
+{{tip.tip}}
 
 </div>
 
@@ -103,15 +118,18 @@ TIP {{tip.tip}} ({{tip.prob}}%)
 
 <div class="match">
 
-{{m.home}} vs {{m.away}}
+<div>
+{{m.home}} vs {{m.away}} <br>
+AI {{m.prob}}%
+</div>
 
-<div class="
+<div class="tip
 {% if m.tip == '1' %}tip1{% endif %}
 {% if m.tip == 'X' %}tipx{% endif %}
 {% if m.tip == '2' %}tip2{% endif %}
 ">
 
-TIP {{m.tip}} ({{m.prob}}%)
+{{m.tip}}
 
 </div>
 
@@ -132,15 +150,18 @@ TIP {{m.tip}} ({{m.prob}}%)
 
 <div class="match">
 
-{{m.home}} vs {{m.away}}
+<div>
+{{m.home}} vs {{m.away}} <br>
+AI {{m.prob}}%
+</div>
 
-<div class="
+<div class="tip
 {% if m.tip == '1' %}tip1{% endif %}
 {% if m.tip == 'X' %}tipx{% endif %}
 {% if m.tip == '2' %}tip2{% endif %}
 ">
 
-TIP {{m.tip}} ({{m.prob}}%)
+{{m.tip}}
 
 </div>
 
