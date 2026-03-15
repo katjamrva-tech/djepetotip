@@ -7,6 +7,8 @@
 
 <title>DjepetoTip</title>
 
+<link rel="manifest" href="/static/manifest.json">
+
 <style>
 
 body{
@@ -24,26 +26,28 @@ color:#f97316;
 font-weight:bold;
 }
 
-.container{
-padding:15px;
+.tabs{
+display:flex;
+overflow:auto;
+background:#1e293b;
 }
 
-.card{
-background:#1e293b;
-border-radius:12px;
+.tab{
+padding:12px;
+white-space:nowrap;
+}
+
+.container{
 padding:15px;
-margin-bottom:15px;
 }
 
 .match{
 display:flex;
 justify-content:space-between;
+background:#1e293b;
 padding:12px;
-border-bottom:1px solid #374151;
-}
-
-.match:last-child{
-border-bottom:none;
+margin-bottom:8px;
+border-radius:8px;
 }
 
 .tip{
@@ -55,18 +59,6 @@ font-size:18px;
 .tipx{color:#facc15;}
 .tip2{color:#ef4444;}
 
-button{
-background:#f97316;
-border:none;
-padding:14px;
-border-radius:10px;
-color:white;
-font-size:16px;
-width:100%;
-margin-bottom:15px;
-cursor:pointer;
-}
-
 </style>
 
 </head>
@@ -75,76 +67,19 @@ cursor:pointer;
 
 <header>⚽ DjepetoTip</header>
 
-<div class="container">
+<div class="tabs">
 
-<div class="card">
-
-<h3>🔥 Tip dana</h3>
-
-<div class="match">
-
-<div>
-{{tip.home}} vs {{tip.away}} <br>
-AI {{tip.prob}}%
-</div>
-
-<div class="tip
-{% if tip.tip == '1' %}tip1{% endif %}
-{% if tip.tip == 'X' %}tipx{% endif %}
-{% if tip.tip == '2' %}tip2{% endif %}
-">
-
-{{tip.tip}}
-
-</div>
-
-</div>
-
-</div>
-
-
-<form method="POST">
-<button>🎲 Generiši AI tiket</button>
-</form>
-
-
-{% if ticket %}
-
-<div class="card">
-
-<h3>🎟 AI tiket</h3>
-
-{% for m in ticket %}
-
-<div class="match">
-
-<div>
-{{m.home}} vs {{m.away}} <br>
-AI {{m.prob}}%
-</div>
-
-<div class="tip
-{% if m.tip == '1' %}tip1{% endif %}
-{% if m.tip == 'X' %}tipx{% endif %}
-{% if m.tip == '2' %}tip2{% endif %}
-">
-
-{{m.tip}}
-
-</div>
-
-</div>
-
+{% for league in leagues.keys() %}
+<div class="tab">{{league}}</div>
 {% endfor %}
 
 </div>
 
-{% endif %}
+<div class="container">
 
+{% for league, matches in leagues.items() %}
 
-<div class="card">
-
-<h3>📅 Današnje utakmice</h3>
+<h3>{{league}}</h3>
 
 {% for m in matches %}
 
@@ -169,7 +104,7 @@ AI {{m.prob}}%
 
 {% endfor %}
 
-</div>
+{% endfor %}
 
 </div>
 
