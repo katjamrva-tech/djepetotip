@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 import requests
 import os
-import random
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -17,18 +16,20 @@ LEAGUES = {
 }
 
 
-def ai_tip():
+def ai_tip(home, away):
 
-    home = random.randint(40,75)
-    draw = random.randint(20,40)
-    away = random.randint(40,75)
+    seed = abs(hash(home + away)) % 100
 
-    if home > draw and home > away:
-        return "1", home
-    elif draw > home and draw > away:
-        return "X", draw
+    home_prob = 40 + (seed % 30)
+    draw_prob = 20 + (seed % 20)
+    away_prob = 40 + ((seed * 2) % 30)
+
+    if home_prob > draw_prob and home_prob > away_prob:
+        return "1", home_prob
+    elif draw_prob > home_prob and draw_prob > away_prob:
+        return "X", draw_prob
     else:
-        return "2", away
+        return "2", away_prob
 
 
 def get_matches(code):
@@ -50,13 +51,18 @@ def get_matches(code):
             home = teams[0]["team"]["displayName"]
             away = teams[1]["team"]["displayName"]
 
+            home_logo = teams[0]["team"]["logo"]
+            away_logo = teams[1]["team"]["logo"]
+
             date = event["date"][:10]
 
-            tip, prob = ai_tip()
+            tip, prob = ai_tip(home, away)
 
             matches.append({
                 "home": home,
                 "away": away,
+                "home_logo": home_logo,
+                "away_logo": away_logo,
                 "tip": tip,
                 "prob": prob,
                 "date": date
