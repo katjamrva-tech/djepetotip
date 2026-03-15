@@ -1,81 +1,94 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template
+import requests
 import random
 import os
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-teams = [
-"Arsenal","Chelsea","Liverpool","Tottenham",
-"Manchester United","Manchester City",
-"Real Madrid","Barcelona","Atletico Madrid",
-"Inter","Milan","Juventus",
-"Bayern Munich","Borussia Dortmund","RB Leipzig",
-"PSG","Lyon","Monaco"
+LEAGUES = [
+"Premier League",
+"La Liga",
+"Serie A",
+"Bundesliga",
+"Ligue 1",
+"Super Lig",
+"UEFA Champions League"
 ]
 
-def generate_matches():
+def ai_prediction():
+
+    home = random.randint(40,75)
+    draw = random.randint(20,40)
+    away = random.randint(40,75)
+
+    if home > draw and home > away:
+        return "1", home
+    elif draw > home and draw > away:
+        return "X", draw
+    else:
+        return "2", away
+
+
+def get_matches():
+
+    url = "https://api.sofascore.com/api/v1/sport/football/scheduled-events"
 
     matches = []
 
-    for i in range(20):
+    try:
+        r = requests.get(url)
+        data = r.json()
+    except:
+        return matches
 
-        home = random.choice(teams)
-        away = random.choice(teams)
+    today = datetime.now().date()
+    tomorrow = today + timedelta(days=1)
 
-        while home == away:
-            away = random.choice(teams)
+    for event in data.get("events", []):
 
-        home_prob = random.randint(40,75)
-        draw_prob = random.randint(20,40)
-        away_prob = random.randint(40,75)
+        try:
 
-        if home_prob > draw_prob and home_prob > away_prob:
-            tip = "1"
-            prob = home_prob
-        elif draw_prob > home_prob and draw_prob > away_prob:
-            tip = "X"
-            prob = draw_prob
-        else:
-            tip = "2"
-            prob = away_prob
+            home = event["homeTeam"]["name"]
+            away = event["awayTeam"]["name"]
 
-        matches.append({
-            "home": home,
-            "away": away,
-            "tip": tip,
-            "prob": prob
-        })
+            league = event["tournament"]["name"]
 
-    matches = sorted(matches, key=lambda x: x["prob"], reverse=True)
+            if not any(l in league for l in LEAGUES):
+                continue
+
+            tip, prob = ai_prediction()
+
+            matches.append({
+                "home": home,
+                "away": away,
+                "league": league,
+                "tip": tip,
+                "prob": prob
+            })
+
+        except:
+            pass
 
     return matches
 
 
-def generate_ticket(matches):
-
-    return random.sample(matches,3)
-
-
-@app.route("/", methods=["GET","POST"])
+@app.route("/")
 def home():
 
-    matches = generate_matches()
+    matches = get_matches()
 
-    tip = matches[0]
+    leagues = {}
 
-    ticket = None
-
-    if request.method == "POST":
-        ticket = generate_ticket(matches)
+    for league in LEAGUES:
+        leagues[league] = [m for m in matches if league in m["league"]]
 
     return render_template(
         "index.html",
-        matches=matches,
-        tip=tip,
-        ticket=ticket
+        leagues=leagues
     )
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
+    port = int(os.environ.get("PORT",10000))
     app.run(host="0.0.0.0", port=port)
