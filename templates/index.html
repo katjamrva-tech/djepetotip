@@ -1,35 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>DjepetoTip</title>
+<style>
+body{
+background:#111827;
+color:white;
+font-family:Arial;
+padding:40px;
+}
+
+h1{color:#f97316}
+
+.box{
+background:#1f2937;
+padding:15px;
+margin-top:15px;
+border-radius:8px;
+}
+
+.match{
+margin-bottom:10px;
+}
+
+button{
+background:#f97316;
+border:none;
+padding:10px 15px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+
+input{
+padding:10px;
+border-radius:6px;
+border:none;
+}
+</style>
 </head>
-<body style="background:black;color:white;font-family:sans-serif">
 
-<h1>DjepetoTip</h1>
+<body>
 
-<form method="POST" action="/search">
+<h1>⚽ DjepetoTip</h1>
+
+<form method="GET">
 <input name="team" placeholder="Upiši tim (npr Chelsea)">
-<button type="submit">Pretraži</button>
+<button>Pretraži</button>
 </form>
 
 <br>
 
-<form method="POST" action="/generate">
+<form method="POST">
 <button>🎲 Generiši novi tiket</button>
 </form>
 
+<div class="box">
 <h2>🔥 Tip dana</h2>
-<p>{{ tip }}</p>
 
-<h2>💰 AI tiket</h2>
-<p>{{ tiket }}</p>
+{% if tip %}
+<div class="match">
+<b>{{tip.home}}</b> vs <b>{{tip.away}}</b><br>
+AI šansa: {{tip.prob}} %
+</div>
+{% endif %}
 
+</div>
+
+<div class="box">
 <h2>📅 Današnje utakmice</h2>
-<ul>
+
 {% for m in matches %}
-<li>{{m}}</li>
+<div class="match">
+⚽ {{m.home}} vs {{m.away}} — {{m.prob}} %
+</div>
 {% endfor %}
-</ul>
+
+</div>
 
 </body>
 </html>
